@@ -1,0 +1,94 @@
+        -:    0:Source:randomtestadventurer.c
+        -:    0:Graph:randomtestadventurer.gcno
+        -:    0:Data:randomtestadventurer.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include "dominion.h"
+        -:    2:#include "dominion_helpers.h"
+        -:    3:#include <string.h>
+        -:    4:#include <stdio.h>
+        -:    5:#include <assert.h>
+        -:    6:#include "rngs.h"
+        -:    7:#include <time.h>
+        -:    8:#include <stdlib.h>
+        -:    9:
+        -:   10:#define TESTCARD "Adventurer"
+        -:   11:
+        1:   12:int main() {
+        -:   13:	
+        1:   14:	srand(time(NULL));
+        -:   15:
+        1:   16:    	int newCards = 0;
+        1:   17:   	int discarded = 1;
+        1:   18:   	int xtraCoins = 0;
+        1:   19:   	int shuffledCards = 0;
+        -:   20:
+        -:   21:
+        -:   22:	int numOfPasses;
+        -:   23:	int numOfFailures;
+        1:   24:	int currTreasure = 0;
+        1:   25:	int origTreasure = 0;
+        -:   26:	int card;   
+        -:   27:	int i, j, m;
+        1:   28:   	int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
+        -:   29:  	int remove1, remove2;
+        1:   30:   	int seed = 1000;
+        -:   31:	//the game can have 2-10 players
+        1:   32:	int numPlayers = (rand() % 9) + 2;
+        1:   33:	int thisPlayer = 0;
+        -:   34:	struct gameState state, originalState;
+        1:   35:	int kingdom[10] = {
+        -:   36:                adventurer,
+        -:   37:                smithy,
+        -:   38:                gardens,
+        -:   39:                embargo,
+        -:   40:                minion,
+        -:   41:                village,
+        -:   42:                mine,
+        -:   43:                sea_hag,
+        -:   44:                cutpurse,
+        -:   45:                tribute, };
+        -:   46:
+        1:   47:	printf("----------------- Testing Card: %s ----------------\n", TESTCARD);
+        -:   48:
+     2001:   49:	for (j = 0; j < 2000; j++) {
+        -:   50:
+        -:   51:	// initialize a game state and player cards
+     2000:   52:	initializeGame(numPlayers, kingdom, seed, &state);
+        -:   53:
+        -:   54:	// copy the game state to a test case
+     2000:   55:	memcpy(&originalState, &state, sizeof(struct gameState));
+        -:   56:
+        -:   57:	//make sure that the adventurer card is actually in the player's hand
+     2000:   58:	state.hand[thisPlayer][0] = kingdom[0];
+        -:   59:
+        -:   60:	//randomize the player's hand position
+     2000:   61:	handpos = rand() % (state.handCount[thisPlayer] + 1); //bounded by the player's hand count
+        -:   62:		
+     2000:   63:	cardEffect(adventurer, choice1, choice2, choice3, &state, handpos, &bonus);
+        -:   64:	
+        -:   65:	
+        -:   66:	//printf("Player 1 should gain two treasure cards...\n");
+    18000:   67:	for (i = 0; i < state.handCount[thisPlayer]; i++) {
+    16000:   68:		card = state.hand[thisPlayer][i];
+    16000:   69:		if (card == copper || card == silver || card == gold) {
+    12000:   70:			currTreasure++;
+        -:   71:		}
+        -:   72:	}
+        -:   73:	
+     2000:   74:	if (currTreasure == 2) {
+    #####:   75:		numOfPasses++;
+        -:   76:	//	printf("Passed\n");
+        -:   77:	}
+        -:   78:	else {
+     2000:   79:		numOfFailures++;
+        -:   80:	//	printf("Failed\n");
+        -:   81:	}
+        -:   82:}
+        -:   83:
+        1:   84:	printf("Total number of passes: %d out of %d\n", numOfPasses, 2000);
+        1:   85:	printf("Total number of failures: %d out of %d\n", numOfFailures, 2000);
+        1:   86:	return 0;
+        -:   87:}
+        -:   88:
+        -:   89:
